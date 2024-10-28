@@ -1644,6 +1644,10 @@ impl Writer {
 
         //self.check(class.required_capabilities())?;
 
+        if class == spirv::StorageClass::StorageBuffer {
+            self.decorate(id, Decoration::Coherent, &[]);
+        }
+
         if self.flags.contains(WriterFlags::DEBUG) {
             if let Some(ref name) = global_variable.name {
                 self.debugs.push(Instruction::name(id, name));
