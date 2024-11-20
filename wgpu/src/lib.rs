@@ -20,7 +20,7 @@
 
 #[doc(hidden)]
 /// This is here to make not having the patch induce a compile error and be noticed quicker.
-pub const PLEASE_PATCH_YOUR_WGPU_VERSION : () = ();
+pub const PLEASE_PATCH_YOUR_WGPU_VERSION: () = ();
 
 mod backend;
 mod context;
