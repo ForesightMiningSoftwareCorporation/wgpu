@@ -20,6 +20,10 @@ use std::{num::NonZeroU32, ops::Range};
 pub mod assertions;
 pub mod math;
 
+#[doc(hidden)]
+/// This is here to make not having the patch induce a compile error and be noticed quicker.
+pub const PLEASE_PATCH_YOUR_WGPU_TYPES_VERSION : () = ();
+
 // Use this macro instead of the one provided by the bitflags_serde_shim crate
 // because the latter produces an error when deserializing bits that are not
 // specified in the bitflags, while we want deserialization to succeed and
