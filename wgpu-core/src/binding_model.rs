@@ -177,6 +177,8 @@ pub enum CreateBindGroupError {
     DepthStencilAspect,
     #[error("The adapter does not support read access for storages texture of format {0:?}")]
     StorageReadNotSupported(wgt::TextureFormat),
+    #[error("The adapter does not support atomics for storage textures of format {0:?}")]
+    StorageAtomicNotSupported(wgt::TextureFormat),
     #[error(transparent)]
     ResourceUsageCompatibility(#[from] ResourceUsageCompatibilityError),
     #[error(transparent)]

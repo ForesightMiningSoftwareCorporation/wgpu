@@ -379,6 +379,18 @@ impl super::Adapter {
         );
 
         features.set(
+            wgt::Features::TEXTURE_INT64_ATOMIC,
+            shader_model >= naga::back::hlsl::ShaderModel::V6_6
+                && hr.is_ok()
+                && features1.Int64ShaderOps.as_bool(),
+        );
+
+        features.set(
+            wgt::Features::TEXTURE_ATOMIC,
+            shader_model >= naga::back::hlsl::ShaderModel::V5_0,
+        );
+
+        features.set(
             wgt::Features::SUBGROUP,
             shader_model >= naga::back::hlsl::ShaderModel::V6_0
                 && hr.is_ok()
@@ -679,6 +691,12 @@ impl crate::Adapter for super::Adapter {
             data_srv_uav
                 .Support2
                 .contains(Direct3D12::D3D12_FORMAT_SUPPORT2_UAV_TYPED_LOAD),
+        );
+        caps.set(
+            Tfc::SHADER_ATOMIC,
+            data_srv_uav
+                .Support2
+                .contains(Direct3D12::D3D12_FORMAT_SUPPORT2_UAV_ATOMIC_UNSIGNED_MIN_OR_MAX),
         );
 
         // We load via UAV/SRV so use srv_uav_format

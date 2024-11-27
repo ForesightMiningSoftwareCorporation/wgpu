@@ -1860,6 +1860,11 @@ impl Device {
                                     wgt::Features::TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES;
                                 WritableStorage::Yes
                             }
+                            wgt::StorageTextureAccess::Atomic => {
+                                required_features |=
+                                    wgt::Features::TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES;
+                                WritableStorage::Yes
+                            }
                         },
                     )
                 }
@@ -2544,6 +2549,17 @@ impl Device {
                         }
 
                         hal::TextureUses::STORAGE_READ_WRITE
+                    }
+                    wgt::StorageTextureAccess::Atomic => {
+                        if !view
+                            .format_features
+                            .flags
+                            .contains(wgt::TextureFormatFeatureFlags::ATOMIC)
+                        {
+                            return Err(Error::StorageAtomicNotSupported(view.desc.format));
+                        }
+
+                        hal::TextureUses::SHADER_ATOMIC
                     }
                 };
                 Ok((wgt::TextureUsages::STORAGE_BINDING, internal_use))

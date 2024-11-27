@@ -1077,10 +1077,13 @@ impl Writer {
                 "storage image format",
                 &[spirv::Capability::StorageImageExtendedFormats],
             ),
-            If::R64ui | If::R64i => self.require_any(
-                "64-bit integer storage image format",
-                &[spirv::Capability::Int64ImageEXT],
-            ),
+            If::R64ui | If::R64i => {
+                self.use_extension("SPV_EXT_shader_image_int64");
+                self.require_any(
+                    "64-bit integer storage image format",
+                    &[spirv::Capability::Int64ImageEXT],
+                )
+            }
             If::Unknown
             | If::Rgba32f
             | If::Rgba16f
@@ -1658,10 +1661,13 @@ impl Writer {
             },
         };
         if let Some(storage_access) = storage_access {
-            if !storage_access.contains(crate::StorageAccess::LOAD) {
+            if !storage_access.intersects(crate::StorageAccess::LOAD | crate::StorageAccess::ATOMIC)
+            {
                 self.decorate(id, Decoration::NonReadable, &[]);
             }
-            if !storage_access.contains(crate::StorageAccess::STORE) {
+            if !storage_access
+                .intersects(crate::StorageAccess::STORE | crate::StorageAccess::ATOMIC)
+            {
                 self.decorate(id, Decoration::NonWritable, &[]);
             }
         }

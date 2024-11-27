@@ -518,11 +518,20 @@ impl Adapter {
             wgt::TextureUsages::RENDER_ATTACHMENT,
             caps.intersects(Tfc::COLOR_ATTACHMENT | Tfc::DEPTH_STENCIL_ATTACHMENT),
         );
+        allowed_usages.set(
+            wgt::TextureUsages::SHADER_ATOMIC,
+            caps.intersects(Tfc::SHADER_ATOMIC),
+        );
 
         let mut flags = wgt::TextureFormatFeatureFlags::empty();
         flags.set(
             wgt::TextureFormatFeatureFlags::STORAGE_READ_WRITE,
             caps.contains(Tfc::STORAGE_READ_WRITE),
+        );
+
+        flags.set(
+            wgt::TextureFormatFeatureFlags::ATOMIC,
+            caps.contains(Tfc::SHADER_ATOMIC),
         );
 
         flags.set(

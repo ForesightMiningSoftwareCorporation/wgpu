@@ -1692,6 +1692,9 @@ impl crate::context::Context for ContextWebGpu {
                             wgt::StorageTextureAccess::ReadWrite => {
                                 webgpu_sys::GpuStorageTextureAccess::ReadWrite
                             }
+                            wgt::StorageTextureAccess::Atomic => {
+                                todo!()
+                            }
                         };
                         let mut storage_texture = webgpu_sys::GpuStorageTextureBindingLayout::new(
                             map_texture_format(format),

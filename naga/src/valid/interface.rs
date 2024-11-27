@@ -129,6 +129,9 @@ fn storage_usage(access: crate::StorageAccess) -> GlobalUse {
     if access.contains(crate::StorageAccess::STORE) {
         storage_usage |= GlobalUse::WRITE;
     }
+    if access.contains(crate::StorageAccess::ATOMIC) {
+        storage_usage |= GlobalUse::ATOMIC;
+    }
     storage_usage
 }
 

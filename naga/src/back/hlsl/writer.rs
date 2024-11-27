@@ -830,7 +830,9 @@ impl<'a, W: fmt::Write> super::Writer<'a, W> {
                 "b"
             }
             crate::AddressSpace::Storage { access } => {
-                let (prefix, register) = if access.contains(crate::StorageAccess::STORE) {
+                let (prefix, register) = if access
+                    .intersects(crate::StorageAccess::STORE | crate::StorageAccess::ATOMIC)
+                {
                     ("RW", "u")
                 } else {
                     ("", "t")
@@ -2209,6 +2211,25 @@ impl<'a, W: fmt::Write> super::Writer<'a, W> {
 
                 writeln!(self.out, ");")?;
             }
+            crate::Statement::ImageAtomic {
+                image,
+                coordinate,
+                sample: _,
+                fun,
+                value,
+            } => {
+                write!(self.out, "{level}")?;
+
+                let fun_str = fun.to_hlsl_suffix();
+                write!(self.out, "Interlocked{fun_str}(")?;
+                self.write_expr(module, image, func_ctx)?;
+                write!(self.out, "[")?;
+                self.write_expr(module, coordinate, func_ctx)?;
+                write!(self.out, "],")?;
+
+                self.write_expr(module, value, func_ctx)?;
+                writeln!(self.out, ");")?;
+            }
             Statement::WorkGroupUniformLoad { pointer, result } => {
                 self.write_barrier(crate::Barrier::WORK_GROUP, level)?;
                 write!(self.out, "{level}")?;
@@ -3509,7 +3530,8 @@ impl<'a, W: fmt::Write> super::Writer<'a, W> {
                     _ => crate::StorageAccess::default(),
                 };
                 let wrapped_array_length = WrappedArrayLength {
-                    writable: storage_access.contains(crate::StorageAccess::STORE),
+                    writable: storage_access
+                        .intersects(crate::StorageAccess::STORE | crate::StorageAccess::ATOMIC),
                 };
 
                 write!(self.out, "((")?;
