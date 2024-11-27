@@ -18,6 +18,10 @@
 #![doc(html_logo_url = "https://raw.githubusercontent.com/gfx-rs/wgpu/trunk/logo.png")]
 #![warn(missing_docs, rust_2018_idioms, unsafe_op_in_unsafe_fn)]
 
+#[doc(hidden)]
+/// This is here to make not having the patch induce a compile error and be noticed quicker.
+pub const PLEASE_PATCH_YOUR_WGPU_VERSION: () = ();
+
 //
 //
 // Modules
