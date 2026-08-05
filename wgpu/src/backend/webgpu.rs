@@ -1215,8 +1215,9 @@ struct WebBufferMapState {
 pub struct WebBuffer {
     /// The associated GPU buffer.
     inner: webgpu_sys::GpuBuffer,
-    /// The mapped array buffer and mapped range.
-    mapping: RefCell<WebBufferMapState>,
+    /// The mapped array buffer and mapped range. Shared across clones, because an unmap through
+    /// any one clone detaches the `ArrayBuffer` for all of them.
+    mapping: Rc<RefCell<WebBufferMapState>>,
     /// Unique identifier for this Buffer.
     ident: crate::cmp::Identifier,
 }
@@ -1226,10 +1227,10 @@ impl WebBuffer {
     fn new(inner: webgpu_sys::GpuBuffer, desc: &crate::BufferDescriptor<'_>) -> Self {
         Self {
             inner,
-            mapping: RefCell::new(WebBufferMapState {
+            mapping: Rc::new(RefCell::new(WebBufferMapState {
                 mapped_buffer: None,
                 range: 0..desc.size,
-            }),
+            })),
             ident: crate::cmp::Identifier::create(),
         }
     }
